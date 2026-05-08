@@ -1,0 +1,49 @@
+name: gitbattle
+description: GitBattle — Gamified GitHub Activity for University Students
+version: 1.0.0+1
+publish_to: none
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.10.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State management
+  provider: ^6.1.1
+
+  # HTTP & API
+  http: ^1.1.0
+
+  # Auth & Security
+  flutter_secure_storage: ^9.0.0
+  url_launcher: ^6.2.1
+  app_links: ^6.0.0
+
+  # UI Components
+  fl_chart: ^0.65.0
+  cached_network_image: ^3.3.0
+  shimmer: ^3.0.0
+  google_fonts: ^6.1.0
+
+  # Storage
+  shared_preferences: ^2.2.2
+
+  # Utils
+  intl: ^0.18.1
+  timeago: ^3.6.0
+
+  cupertino_icons: ^1.0.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/

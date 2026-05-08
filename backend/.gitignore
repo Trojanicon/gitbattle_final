@@ -1,0 +1,10 @@
+node_modules/
+.env
+.env.test
+*.log
+.DS_Store
+dist/
+# Android specific sensitive files
+.gradle/
+local.properties
+*.keystore

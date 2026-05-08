@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  # MongoDB
+  mongodb:
+    image: mongo:7
+    container_name: gitbattle_db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: gitbattle
+    networks:
+      - gitbattle_net
+
+  # Backend API
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: gitbattle_api
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - MONGODB_URI=mongodb://mongodb:27017/gitbattle
+      - JWT_SECRET=${JWT_SECRET:-super_secret_dev_key}
+      - JWT_EXPIRES_IN=30d
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
+      - GITHUB_REDIRECT_URI=http://localhost:3000/auth/github/callback
+      - FRONTEND_URL=gitbattle://auth/callback
+      - CACHE_TTL=300
+      - SYNC_INTERVAL_MINUTES=15
+    depends_on:
+      - mongodb
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    networks:
+      - gitbattle_net
+    restart: unless-stopped
+
+volumes:
+  mongo_data:
+
+networks:
+  gitbattle_net:
+    driver: bridge

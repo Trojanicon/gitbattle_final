@@ -1,0 +1,307 @@
+{
+  "info": {
+    "name": "GitBattle API",
+    "description": "Complete API test collection for GitBattle backend.\n\nSetup:\n1. Set the `base_url` variable to http://localhost:3000\n2. Run 'Auth - Mobile Login' to get a token\n3. The token auto-populates all other requests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:3000" },
+    { "key": "token",    "value": "" }
+  ],
+  "item": [
+    {
+      "name": "🔐 Auth",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/health"
+          }
+        },
+        {
+          "name": "GitHub OAuth Redirect (browser)",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/auth/github",
+            "description": "Open this URL in your browser to start OAuth flow"
+          }
+        },
+        {
+          "name": "Mobile Login (exchange code for JWT)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.token) {",
+                  "  pm.collectionVariables.set('token', json.token);",
+                  "  console.log('Token saved:', json.token.substring(0,20) + '...');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/auth/mobile",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"YOUR_GITHUB_OAUTH_CODE_HERE\"\n}"
+            },
+            "description": "Get a GitHub OAuth code by visiting /auth/github in a browser, then paste the code from the callback URL here"
+          }
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/auth/me",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "Sync GitHub Data",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/auth/sync",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/auth/logout",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "👤 User",
+      "item": [
+        {
+          "name": "My Full Profile",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/user/profile",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "Get User by Username",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/user/octocat",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "description": "Replace 'octocat' with any GitBattle user's GitHub username"
+          }
+        },
+        {
+          "name": "Get Coding Insights",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/user/insights/personal",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "🏆 Leaderboard",
+      "item": [
+        {
+          "name": "Global Leaderboard",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/leaderboard/global?page=1&limit=20",
+              "query": [
+                { "key": "page",  "value": "1" },
+                { "key": "limit", "value": "20" }
+              ]
+            },
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "Weekly Leaderboard",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/leaderboard/weekly",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "Streak Leaderboard",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/leaderboard/streak",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "👥 Friends",
+      "item": [
+        {
+          "name": "List Friends",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/friends",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "Send Friend Request",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/friends/request",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"githubUsername\": \"octocat\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Incoming Requests",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/friends/requests",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "Accept Friend Request",
+          "request": {
+            "method": "PATCH",
+            "url": "{{base_url}}/friends/request/REQUEST_ID_HERE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"accept\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Decline Friend Request",
+          "request": {
+            "method": "PATCH",
+            "url": "{{base_url}}/friends/request/REQUEST_ID_HERE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"decline\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Remove Friend",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/friends/FRIEND_ID_HERE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "Friends Leaderboard",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/friends/leaderboard",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "⚔️ Challenges",
+      "item": [
+        {
+          "name": "List All Challenges",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/challenges",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "Create Challenge (Commit Count)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/challenges",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"First to 50 Commits\",\n  \"description\": \"Who can hit 50 commits first this month?\",\n  \"type\": \"commit_count\",\n  \"goal\": 50,\n  \"duration\": 30,\n  \"isPublic\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Create Challenge (Streak)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/challenges",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"7-Day Streak Challenge\",\n  \"description\": \"Maintain the longest streak over 7 days\",\n  \"type\": \"streak\",\n  \"goal\": 7,\n  \"duration\": 7,\n  \"isPublic\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Challenge Details",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/challenges/CHALLENGE_ID_HERE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "Join Challenge by ID",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/challenges/CHALLENGE_ID_HERE/join",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "Join by Invite Code",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/challenges/join-code/ABC123",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "description": "Replace ABC123 with the 6-character invite code"
+          }
+        },
+        {
+          "name": "Leave Challenge",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/challenges/CHALLENGE_ID_HERE/leave",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        }
+      ]
+    }
+  ]
+}

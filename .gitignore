@@ -1,0 +1,33 @@
+# ─── Node / Backend ──────────────────────────────────────────────────────────
+backend/node_modules/
+backend/.env
+backend/*.log
+backend/dist/
+backend/.nyc_output/
+backend/coverage/
+
+# ─── Flutter / Frontend ───────────────────────────────────────────────────────
+frontend/.dart_tool/
+frontend/.flutter-plugins
+frontend/.flutter-plugins-dependencies
+frontend/.packages
+frontend/build/
+frontend/ios/Pods/
+frontend/ios/.symlinks/
+frontend/android/.gradle/
+frontend/android/app/build/
+frontend/android/local.properties
+frontend/*.iml
+frontend/.idea/
+frontend/pubspec.lock       # Commit this in real projects; ignored here for portability
+
+# ─── OS ──────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# ─── IDE ─────────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.code-workspace
