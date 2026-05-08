@@ -26,7 +26,7 @@ services:
       - NODE_ENV=development
       - PORT=3000
       - MONGODB_URI=mongodb://mongodb:27017/gitbattle
-      - JWT_SECRET=${JWT_SECRET:-super_secret_dev_key}
+      - JWT_SECRET=
       - JWT_EXPIRES_IN=30d
       - GITHUB_CLIENT_ID=Ov23liTy3vGPhhDkZJRY
       - GITHUB_CLIENT_SECRET=3ca3ae6f7231c91be1ba618ebdc89798907fecb0
